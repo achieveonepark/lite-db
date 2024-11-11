@@ -1,0 +1,18 @@
+{
+    "name": "Achieve.Database",
+    "rootNamespace": "",
+    "references": [
+        "GUID:aed8d7317cce44904bbc53d7eb6147f8",
+        "GUID:27ce8faacdde34e508755900548477aa",
+        "GUID:17f96cd3b93974f6493e51a2f25c1241"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

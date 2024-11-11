@@ -1,0 +1,23 @@
+{
+  "name": "com.achieve.lite-db",
+  "displayName": "LiteDB",
+  "author": "Achieveone",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "A lightweight and fast library powered by SQLite.",
+  "keywords": [
+    "Database"
+  ],
+  "dependencies": {
+    "com.unity.test-framework": "1.0.16"
+  },
+  "documentationUrl": "https://achieveonepark.github.io/cording-library/Documents/QuickSave/QuickSave",
+  "changelogUrl": "https://github.com/achieveonepark/QuickSave/blob/main/CHANGELOG.md",
+  "repository": {
+    "url": "https://github.com/achieveonepark/QuickSave",
+    "type": "git"
+  },
+  "_upm": {
+    "changelog": "## Added\n- Package release"
+  }
+}

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.IO;
 using Gilzoide.SqliteAsset.Csv;
 using SQLite;
@@ -104,3 +105,4 @@ namespace Achieve.Database.Editor
         }
     }
 }
+#endif

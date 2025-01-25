@@ -1,40 +1,34 @@
+using System.Collections.Generic;
 using SQLite;
 using UnityEngine;
 
 namespace Achieve.Database
 {
+    /// <summary>
+    /// db에 기록해둔 데이터를 쉽게 읽어오도록 도움을 주는 기능들을 제공합니다.
+    /// </summary>
     public static class LiteDB
     {
         private static SQLiteConnection _db;
 
         private static bool _isInitialized => _db != null;
 
+        /// <summary>
+        /// 내부에서 사용 할 DB 객체를 생성합니다.
+        /// </summary>
+        /// <param name="path"></param>
         public static void Initialize(string path)
         {
             _db = new SQLiteConnection(path);
             Debug.Log("[LiteDB] Initialized");
         }
 
-        public static void CreateTable<T>()
-        {
-            if (_isInitialized is false)
-            {
-                return;
-            }
-
-            _db.CreateTable<T>();
-        }
-
-        public static void DropTable<T>()
-        {
-            if (_isInitialized is false)
-            {
-                return;
-            }
-
-            _db.DropTable<T>();
-        }
-
+        /// <summary>
+        /// db에 Primary Key로 설정했던 Id를 입력하여 데이터를 가져옵니다.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T Get<T>(object id) where T : new()
         {
             if (_isInitialized is false)
@@ -42,21 +36,43 @@ namespace Achieve.Database
                 return default;
             }
 
-            var data = _db.Query<T>($"SELECT COUNT(1) FROM {typeof(T).Name} WHERE id = ?", id);
-
-            // var data = _db.Get<T>(id);
-
-            return data[0];
+            return _db.Get<T>(id);
         }
 
-        public static bool Exists(string tableName, object id)
+        /// <summary>
+        /// StartId ~ EndId 사이의 데이터들을 조회하여 List로 반환합니다.
+        /// </summary>
+        /// <param name="startId"></param>
+        /// <param name="endId"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static List<T> GetList<T>(int startId, int endId) where T : IDataBase, new()
         {
-            string query = $"SELECT COUNT(1) FROM {tableName} WHERE ID = ?";
+            string query = $"SELECT * FROM {typeof(T).Name} WHERE Id >= {startId} AND Id <= {endId}";
+            return _db.Query<T>(query);
+        }
+
+        /// <summary>
+        /// 제너릭으로 추가한 테이블의 id가 존재하는지 확인한 후 결과를 반환합니다.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool Exist<T>(int id) where T : IDataBase
+        {
+            string query = $"SELECT COUNT(1) FROM {typeof(T).Name} WHERE ID = ?";
             int count = (int)_db.ExecuteScalar<object>(query, id);
             return count > 0;
         }
 
-        public static bool TryGetValue<TValue, TKey>(string tableName, TKey id, out TValue result) where TValue : new()
+        /// <summary>
+        /// 데이터를 조회하여 값이 있다면 true와 out으로 데이터를 반환하고, 없으면 false와 null을 반환합니다.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="result"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool TryGetValue<T>(int id, out T result) where T : IDataBase, new()
         {
             if (_isInitialized is false)
             {
@@ -64,26 +80,16 @@ namespace Achieve.Database
                 return false;
             }
 
-            string query = $"SELECT COUNT(1) FROM {tableName} WHERE ID = ?";
+            string query = $"SELECT COUNT(1) FROM {typeof(T).Name} WHERE ID = ?";
             int count = _db.ExecuteScalar<int>(query, id);
             if (count > 0)
             {
-                result = Get<TValue>(id);
+                result = Get<T>(id);
                 return true;
             }
 
-            result = default(TValue);
+            result = default(T);
             return false;
-        }
-
-        public static void Insert<T>(T data) where T : new()
-        {
-            if (_isInitialized is false)
-            {
-                return;
-            }
-
-            _db.InsertOrReplace(data);
         }
     }
 }

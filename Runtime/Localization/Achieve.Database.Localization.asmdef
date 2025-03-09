@@ -1,12 +1,9 @@
 {
-    "name": "Achieve.Database",
+    "name": "Achieve.Database.Localization",
     "rootNamespace": "",
     "references": [
-        "GUID:aed8d7317cce44904bbc53d7eb6147f8",
-        "GUID:27ce8faacdde34e508755900548477aa",
-        "GUID:17f96cd3b93974f6493e51a2f25c1241",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:2765e68924a08a94ea0ea66b31c0168f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:d88a0377d4cbded43be820fd05c3683f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

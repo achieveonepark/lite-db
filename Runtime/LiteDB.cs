@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.IO;
+using Cysharp.Threading.Tasks;
 using SQLite;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Achieve.Database
 {
@@ -20,6 +23,19 @@ namespace Achieve.Database
         public static void Initialize(string path)
         {
             _db = new SQLiteConnection(path);
+            Debug.Log("[LiteDB] Initialized");
+        }
+
+        public static async UniTask Initialize()
+        {
+            if (Directory.Exists(DBPath.DB_PATH) is false)
+            {
+                Directory.CreateDirectory(DBPath.DB_PATH);
+            }
+
+            await CopyDbFile();
+
+            _db = new SQLiteConnection(DBPath.LOCAL_FILE_PATH);
             Debug.Log("[LiteDB] Initialized");
         }
 
@@ -90,6 +106,34 @@ namespace Achieve.Database
 
             result = default(T);
             return false;
+        }
+
+        private static async UniTask CopyDbFile()
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                using var request = UnityWebRequest.Get(DBPath.ASSETS_FILE_PATH);
+                await request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    File.WriteAllBytes(DBPath.LOCAL_FILE_PATH, request.downloadHandler.data);
+                }
+                else
+                {
+                    Debug.LogError($"Failed to copy database: {request.error}");
+                }
+            }
+            else
+            {
+                if (Directory.Exists(DBPath.LOCAL_FILE_PATH))
+                {
+                    Directory.CreateDirectory(DBPath.LOCAL_FILE_PATH);
+                }
+                
+                // iOS, Windows, Mac은 바로 복사 가능
+                File.Copy(DBPath.ASSETS_FILE_PATH, DBPath.LOCAL_FILE_PATH, true);
+            }
         }
     }
 }

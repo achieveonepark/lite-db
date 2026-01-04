@@ -91,6 +91,7 @@ namespace Achieve.Database.Editor.CodeGeneration
             sb.AppendLine();
             sb.AppendLine($"namespace {nameSpace}");
             sb.AppendLine("{");
+            sb.AppendLine($"    [Table(\"{className}\")]");
             sb.AppendLine($"    public partial class {className}");
             sb.AppendLine("    {");
 

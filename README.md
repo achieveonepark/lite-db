@@ -1,69 +1,70 @@
-
 # LiteDB
 
-게임에서 사용하는 테이블 데이터를 SQLite로 관리하면서 내부적으로 QUERY의 WHERE절을 이용해 데이터를 반환합니다.
+LiteDB는 Unity 프로젝트에서 SQLite DB 파일을 가볍게 읽기 위한 패키지입니다. 게임 밸런스 데이터, 퀘스트, 아이템, 지역화 텍스트처럼 정적인 테이블 데이터를 C# 모델로 매핑해서 조회할 수 있습니다.
 
-## 사용하기 전 설정하기
-1. [DB Browser](https://sqlitebrowser.org/)을 설치합니다.<br>![New Database](./Document~/img.png)
-2. 새로운 데이터베이스를 생성합니다.
-3. Create Table을 클릭하여 테이블 및 변수를 추가합니다. 변수 추가에 대한 상세는 아래를 참조해주세요.
-4. 생성한 테이블에 데이터를 추가합니다.
+이 패키지는 sqlite-net 또는 SQLite Asset 패키지를 래핑하지 않습니다. 기존 사용부와 비슷하게 `SQLiteConnection`, `[Table]`, `[PrimaryKey]` 같은 인터페이스를 제공하되 내부에서는 네이티브 SQLite C API를 직접 호출합니다.
 
-### SQLite 테이블 생성하기
-- Type
+## Documentation
 
-| SQLite Type | C# Type            |
-|-------------|--------------------|
-| INTEGER     | int, long          |
-| REAL        | double, float      |
-| TEXT        | string, enum, bool |
-| BLOB        | byte[]             |
+GitBook 가이드는 GitHub Pages로 배포됩니다.
 
-- **PK** : Primary Key, 기본 키이며 이 패키지에서는 `Id`를 PK로 설정
-- **NN** : Not Null, bool 처럼 NULL 값을 허용하지 않는 값일 경우 설정
-- **AI** : Auto Increment, 정수형 열에서 사용되며, 새로운 행이 추가될 때마다 값이 자동으로 1씩 증가함.<br>일반적으로 기본 키와 함께 사용.
-- **U** : Unsigned, 숫자 데이터 타입에서 사용되며 음수를 허용하지 않는 0 이상의 값
-
-### 테이블 데이터 클래스 생성하기
-
-> CsvImporter에서 Code Generator를 지원하니 원클릭으로도 테이블데이터 클래스를 만들어보세요.
-
-위와 같이 값을 설정했다면, 유니티에서도 받아와서 사용 할 클래스를 생성해주어야 합니다.
-
-```csharp
-using Achieve.Database;
-using Unity.VisualScripting.Dependencies.Sqlite;
-
-[Table("TowerData")]
-public class UnitData : IDataBase
-{
-    // Id로 Query에서 조회하기 때문에 이 Attribute와 PK 체크가 꼭 되어야 함
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public double Attack { get; set; }
-    public double Defense { get; set; }
-    public double HP { get; set; }
-}
-```
+https://somiri.dev/lite-db/
 
 ## Quick Start
 
 ```csharp
-LiteDB.Initialize($"{Application.persistentDataPath}/secure/data.db"); // Path
+using Achieve.Database;
+using SQLite;
 
-var data = LiteDB.Get<Quest>(1);
-
-if (LiteDB.TryGetValue<Quest, int>("Quest", 1, out var quest))
+[Table("Quest")]
+public sealed class Quest : IDataBase
 {
-    var reward = quest.reward;
-}
-
-// 존재한다면 Id가 1~10인 값들을 List로 불러 옴
-var list = LiteDB.GetList<Quest>(1, 10);
-
-if(LiteDB.Exist<Quest>(1))
-{
-    // 존재한다!
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int RewardGold { get; set; }
 }
 ```
+
+```csharp
+await LiteDB.Initialize();
+
+var quest = LiteDB.Get<Quest>(1);
+
+if (LiteDB.TryGetValue<Quest>(2, out var nextQuest))
+{
+    Debug.Log(nextQuest.Name);
+}
+
+var quests = LiteDB.GetList<Quest>(1, 10);
+
+if (LiteDB.Exist<Quest>(1))
+{
+    Debug.Log("Quest exists.");
+}
+```
+
+## DB File
+
+기본 초기화 API는 다음 경로를 사용합니다.
+
+| 용도 | 경로 |
+| --- | --- |
+| 원본 DB | `Application.streamingAssetsPath/data/file.db` |
+| 런타임 복사본 | `Application.persistentDataPath/data/localdatasqlite.db` |
+
+직접 DB 파일 경로를 지정할 수도 있습니다.
+
+```csharp
+LiteDB.Initialize($"{Application.persistentDataPath}/data/game.db");
+```
+
+## Editor Tools
+
+CSV Importer는 Unity Editor 메뉴에서 열 수 있습니다.
+
+```text
+GameFramework/Data/CsvImporter
+```
+
+CSV 파일을 SQLite 테이블로 삽입하고, CSV 헤더를 기반으로 C# 데이터 모델 클래스를 생성할 수 있습니다.

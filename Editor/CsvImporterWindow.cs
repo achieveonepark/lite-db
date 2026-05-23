@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Achieve.Database.Editor.CodeGeneration;
-using Gilzoide.SqliteAsset.Csv;
+using Achieve.Database.Editor.Csv;
 using SQLite;
 using UnityEditor;
 using UnityEngine;

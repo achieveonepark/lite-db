@@ -1,0 +1,13 @@
+{
+  "title": "LiteDB Guide",
+  "description": "Unity에서 SQLite 기반 테이블 데이터를 가볍게 읽기 위한 LiteDB 패키지 가이드",
+  "language": "ko",
+  "plugins": [
+    "-sharing"
+  ],
+  "pluginsConfig": {
+    "theme-default": {
+      "showLevel": true
+    }
+  }
+}

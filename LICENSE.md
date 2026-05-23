@@ -11,19 +11,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-## Included Libraries and Their Licenses
+## Included Runtime Binary
+
+LiteDB includes platform-specific native SQLite plugin binaries originally provided by:
 
 ### unity-sqlite-net
 - Repository: [unity-sqlite-net](https://github.com/gilzoide/unity-sqlite-net)  
-- License: MIT License  
-- Copyright (c) [gilzoide]
-
-### unity-sqlite-asset
-- Repository: [unity-sqlite-asset](https://github.com/gilzoide/unity-sqlite-asset)  
-- License: MIT License  
-- Copyright (c) [gilzoide]
-
-### unity-sqlite-asset-csv
-- Repository: [unity-sqlite-asset-csv](https://github.com/gilzoide/unity-sqlite-asset-csv)  
 - License: MIT License  
 - Copyright (c) [gilzoide]

@@ -1,0 +1,13 @@
+{
+  "name": "lite-db-guide",
+  "private": true,
+  "version": "1.0.0",
+  "description": "GitBook guide for the LiteDB Unity package.",
+  "scripts": {
+    "build": "honkit build . _book",
+    "serve": "honkit serve . _book"
+  },
+  "devDependencies": {
+    "honkit": "6.2.0"
+  }
+}

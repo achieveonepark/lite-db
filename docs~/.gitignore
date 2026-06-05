@@ -1,0 +1,13 @@
+# Docusaurus
+node_modules/
+build/
+.docusaurus/
+.cache-loader/
+
+# OS
+.DS_Store
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

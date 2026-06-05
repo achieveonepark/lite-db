@@ -1,0 +1,3 @@
+
+# somiri-docs: docs~ 는 전역 *~ 무시에서 제외
+!docs~/

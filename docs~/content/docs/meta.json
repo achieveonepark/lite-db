@@ -1,0 +1,14 @@
+{
+  "title": "문서",
+  "pages": [
+    "index",
+    "installation",
+    "database-file",
+    "data-models",
+    "runtime-api",
+    "csv-importer",
+    "localization",
+    "pages-ci",
+    "troubleshooting"
+  ]
+}

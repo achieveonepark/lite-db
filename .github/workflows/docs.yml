@@ -1,17 +1,12 @@
-name: Deploy GitBook Pages
+name: Deploy Docs (Fumadocs)
 
 on:
   push:
     branches:
       - main
     paths:
-      - ".github/workflows/pages.yml"
-      - "docs/**"
-      - "README.md"
-      - "CHANGELOG.md"
-      - "package.json"
-      - "Runtime/**"
-      - "Editor/**"
+      - ".github/workflows/docs.yml"
+      - "docs~/**"
   workflow_dispatch:
 
 permissions:
@@ -26,7 +21,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,18 +30,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: docs/package-lock.json
+          cache-dependency-path: docs~/package-lock.json
 
-      - name: Install GitBook dependencies
-        working-directory: docs
+      - name: Install dependencies
+        working-directory: docs~
         run: npm ci
 
-      - name: Build GitBook
-        working-directory: docs
+      - name: Build static site
+        working-directory: docs~
         run: npm run build
 
       - name: Disable Jekyll
-        run: touch docs/_book/.nojekyll
+        run: touch docs~/out/.nojekyll
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -55,7 +49,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/_book
+          path: docs~/out
 
   deploy:
     environment:
@@ -63,7 +57,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

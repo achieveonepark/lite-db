@@ -1,0 +1,35 @@
+---
+title: Localization
+description: Using the localization helper backed by SQLite table data
+---
+
+The `Achieve.Database.Localization` namespace includes a simple localization helper backed by SQLite table data.
+
+## Setting the language
+
+```csharp
+LocalizationManager.SetLanguage(SystemLanguage.Korean);
+```
+
+When the language changes, the `LocalizationManager.onChangeLanguage` event is invoked.
+
+## Looking up a string
+
+```csharp
+var text = LocalizationManager.GetString(1001);
+```
+
+You can also specify the language explicitly.
+
+```csharp
+var english = LocalizationManager.GetString(1001, SystemLanguage.English);
+```
+
+## Looking up a collection
+
+```csharp
+var collection = LocalizationManager.GetCollection(1001);
+var data = collection.GetLocalizedData(SystemLanguage.Japanese);
+```
+
+The localization table model must support `LiteDB.Get<LocalizationCollection>(key)` based on `LocalizationCollection`.

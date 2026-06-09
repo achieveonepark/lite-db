@@ -1,0 +1,77 @@
+---
+title: 快速开始
+description: 从安装 LiteDB 到第一次查询的快速上手指南
+---
+
+本页介绍从安装到第一次查询的最小流程。
+
+## 安装
+
+在 Unity Package Manager 中打开 `Add package from git URL...` 菜单，输入以下地址。
+
+```text
+https://github.com/achieveonepark/lite-db.git
+```
+
+### 依赖
+
+| 包 | 用途 |
+| --- | --- |
+| `com.cysharp.unitask` | 异步 DB 文件复制与初始化 |
+| `com.unity.test-framework` | Unity 测试环境 |
+
+面向 Unity `2022.3` 及以上版本。
+
+## 准备 DB 文件
+
+LiteDB 读取 SQLite DB 文件并映射到 C# 模型。你可以用 DB Browser for SQLite 之类的工具创建 DB 文件。
+
+默认的初始化 API 使用以下位置。
+
+| 用途 | 路径 |
+| --- | --- |
+| 源 DB | `Application.streamingAssetsPath/data/file.db` |
+| 运行时副本 | `Application.persistentDataPath/data/localdatasqlite.db` |
+
+把源 DB 文件放在 `StreamingAssets/data/file.db`。
+
+## 编写数据模型
+
+为要查询的表编写对应的 C# 类。建议把 `Id` 作为主键。
+
+```csharp
+using Achieve.Database;
+using SQLite;
+
+[Table("Quest")]
+public sealed class Quest : IDataBase
+{
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int RewardGold { get; set; }
+}
+```
+
+## 初始化与第一次查询
+
+在游戏启动时调用 `await LiteDB.Initialize()`，会把源 DB 文件复制到运行时路径并连接。之后用 `LiteDB.Get<T>(id)` 等 API 读取数据。
+
+```csharp
+await LiteDB.Initialize();
+
+var quest = LiteDB.Get<Quest>(1);
+if (LiteDB.TryGetValue<Quest>(2, out var nextQuest))
+{
+    Debug.Log(nextQuest.Name);
+}
+```
+
+<Callout type="info">
+在 Android 上通过 `UnityWebRequest` 读取 `StreamingAssets` 文件，其他平台使用文件复制。若要直接指定路径，请使用 `LiteDB.Initialize(path)`。
+</Callout>
+
+## 后续步骤
+
+* [使用方法 › 数据模型](./usage/data-models) — 模型规则与 Attribute
+* [API](./api) — 完整运行时 API

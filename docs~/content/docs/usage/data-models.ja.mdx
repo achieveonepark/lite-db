@@ -1,0 +1,75 @@
+---
+title: データモデル
+description: モデルクラスのルール、IDataBase、対応 Attribute とカラムマッピング
+---
+
+データモデルは public な既定コンストラクターを持つ C# クラスである必要があります。`LiteDB.Get<T>()` と `LiteDB.Query<T>()` は、取得結果のカラム名をモデルの public で設定可能なプロパティまたは public フィールドにマッチングします。
+
+```csharp
+using Achieve.Database;
+using SQLite;
+
+[Table("ItemData")]
+public sealed class ItemData : IDataBase
+{
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Price { get; set; }
+    public float Weight { get; set; }
+}
+```
+
+## IDataBase
+
+`GetList`、`Exist`、`TryGetValue` は `IDataBase` を基準とし、`Id` と `Name` を期待します。
+
+```csharp
+public interface IDataBase
+{
+    int Id { get; set; }
+    string Name { get; set; }
+}
+```
+
+## 対応 Attribute
+
+| Attribute | 説明 |
+| --- | --- |
+| `[Table("Name")]` | クラスと異なるテーブル名を指定 |
+| `[Column("Name")]` | メンバーと異なるカラム名を指定 |
+| `[PrimaryKey]` | 主キーのメンバーを指定 |
+| `[AutoIncrement]` | コード生成の互換性用 Attribute |
+| `[Ignore]` | マッピングから除外 |
+| `[NotNull]` | モデル表現用 Attribute |
+
+`[AutoIncrement]` と `[NotNull]` は、現在テーブル生成 API を提供していないため、ランタイムのスキーマ生成には使用されません。CSV Importer や外部 DB ツールでスキーマを作成する際に意味を合わせておくための用途です。
+
+## カラムマッピング
+
+既定のマッピングは大文字小文字を区別しません。
+
+```csharp
+[Column("display_name")]
+public string DisplayName { get; set; }
+```
+
+setter を持たないプロパティと `readonly` フィールドはマッピング対象から除外されます。
+
+## 型マッピング
+
+クエリ API は `Id` カラムを基準に動作します。SQLite の型と C# の型は次のように対応します。
+
+| SQLite 型 | C# 型 |
+| --- | --- |
+| `INTEGER` | `int`, `long`, `bool`, enum |
+| `REAL` | `float`, `double` |
+| `TEXT` | `string`, `DateTime`, `Guid` |
+| `BLOB` | `byte[]` |
+
+推奨ルール:
+
+* テーブルには `Id` カラムを設けます。
+* 単一キーで取得するモデルは `Id` を主キーとして管理します。
+* C# のプロパティ名と DB のカラム名を一致させます。
+* クラス名とテーブル名が異なる場合は `[Table("TableName")]` を使用します。

@@ -1,0 +1,77 @@
+---
+title: はじめに
+description: LiteDB のインストールから最初のデータ取得までのクイックスタートガイド
+---
+
+このページでは、インストールから最初のクエリまでの最小限の流れを説明します。
+
+## インストール
+
+Unity Package Manager の `Add package from git URL...` メニューに以下のアドレスを入力します。
+
+```text
+https://github.com/achieveonepark/lite-db.git
+```
+
+### 依存関係
+
+| パッケージ | 用途 |
+| --- | --- |
+| `com.cysharp.unitask` | 非同期の DB ファイルコピーと初期化 |
+| `com.unity.test-framework` | Unity テスト環境 |
+
+Unity `2022.3` 以降を対象とします。
+
+## DB ファイルの準備
+
+LiteDB は SQLite DB ファイルを読み込んで C# モデルにマッピングします。DB ファイルは DB Browser for SQLite などのツールで作成できます。
+
+デフォルトの初期化 API は次の場所を使用します。
+
+| 用途 | パス |
+| --- | --- |
+| 元の DB | `Application.streamingAssetsPath/data/file.db` |
+| ランタイムコピー | `Application.persistentDataPath/data/localdatasqlite.db` |
+
+元の DB ファイルを `StreamingAssets/data/file.db` に配置します。
+
+## データモデルの作成
+
+取得するテーブルに対応する C# クラスを作成します。`Id` を主キーにすることを推奨します。
+
+```csharp
+using Achieve.Database;
+using SQLite;
+
+[Table("Quest")]
+public sealed class Quest : IDataBase
+{
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int RewardGold { get; set; }
+}
+```
+
+## 初期化と最初のクエリ
+
+ゲーム開始時に `await LiteDB.Initialize()` を呼び出すと、元の DB ファイルをランタイムパスにコピーして接続します。その後は `LiteDB.Get<T>(id)` などの API でデータを読み込みます。
+
+```csharp
+await LiteDB.Initialize();
+
+var quest = LiteDB.Get<Quest>(1);
+if (LiteDB.TryGetValue<Quest>(2, out var nextQuest))
+{
+    Debug.Log(nextQuest.Name);
+}
+```
+
+<Callout type="info">
+Android では `UnityWebRequest` で `StreamingAssets` ファイルを読み込み、それ以外のプラットフォームではファイルコピーを使用します。パスを直接指定するには `LiteDB.Initialize(path)` を使用してください。
+</Callout>
+
+## 次のステップ
+
+* [使い方 › データモデル](./usage/data-models) — モデルのルールと Attribute
+* [API](./api) — ランタイム API 全体

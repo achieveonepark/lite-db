@@ -1,0 +1,23 @@
+---
+title: Introduction
+description: A lightweight package for reading SQLite-based static table data in Unity
+---
+
+LiteDB is a lightweight package that lets you treat a SQLite database as a read-only table data store in Unity projects. You can map static data that ships with your build — such as game balance data, quests, items, and localized text — to C# models and query it.
+
+This package does not wrap sqlite-net or the SQLite Asset package. It provides a familiar interface like `SQLiteConnection`, `[Table]`, and `[PrimaryKey]`, but internally calls the native SQLite C API directly.
+
+## Features
+
+* Copies a DB file bundled in StreamingAssets to runtime storage and initializes it
+* Single-record lookup by primary key
+* Id-range queries, existence checks, and safe lookups
+* CSV table insertion via the Editor CSV Importer
+* Data model code generation based on CSV headers
+* Localization helper
+
+## Next steps
+
+* [Getting Started](./getting-started) — from installation to your first query
+* [Usage](./usage) — data models, CSV Importer, localization
+* [API](./api) — runtime API reference

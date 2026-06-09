@@ -1,0 +1,70 @@
+---
+title: API
+description: Runtime API reference for Initialize, Get, GetList, Exist, TryGetValue, and more
+---
+
+The runtime entry point is `Achieve.Database.LiteDB`.
+
+## Initialize
+
+```csharp
+LiteDB.Initialize(path);
+```
+
+Connects immediately using the given SQLite file path.
+
+```csharp
+await LiteDB.Initialize();
+```
+
+Copies the default DB file from `StreamingAssets/data/file.db` to `persistentDataPath/data/localdatasqlite.db`, then connects.
+
+## Get
+
+```csharp
+var item = LiteDB.Get<ItemData>(1);
+```
+
+Returns the first row whose primary key or `Id` column equals the given value. Returns `default` when not initialized.
+
+## GetList
+
+```csharp
+var items = LiteDB.GetList<ItemData>(100, 199);
+```
+
+Queries rows in the range `Id >= startId AND Id <= endId`.
+
+## Exist
+
+```csharp
+if (LiteDB.Exist<ItemData>(10))
+{
+    // exists
+}
+```
+
+Checks whether an `Id` exists in the table for the given type.
+
+## TryGetValue
+
+```csharp
+if (LiteDB.TryGetValue<ItemData>(10, out var item))
+{
+    Debug.Log(item.Name);
+}
+```
+
+Checks existence and returns the data via `out` if present. Returns `false` when not initialized or when no data exists.
+
+## Using SQLiteConnection directly
+
+For advanced use, you can use `SQLite.SQLiteConnection` directly.
+
+```csharp
+using var db = new SQLiteConnection(path);
+var rows = db.Query<ItemData>("SELECT * FROM ItemData WHERE Price >= ?", 100);
+var count = db.ExecuteScalar<int>("SELECT COUNT(1) FROM ItemData");
+```
+
+The direct API provided is query-focused. It does not include the full sqlite-net ORM features, LINQ table queries, or an async connection pool.

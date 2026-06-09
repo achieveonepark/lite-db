@@ -1,0 +1,35 @@
+---
+title: 本地化
+description: 使用基于 SQLite 表数据的本地化辅助工具
+---
+
+`Achieve.Database.Localization` 命名空间包含一个基于 SQLite 表数据的简单本地化辅助工具。
+
+## 设置语言
+
+```csharp
+LocalizationManager.SetLanguage(SystemLanguage.Korean);
+```
+
+语言改变时会触发 `LocalizationManager.onChangeLanguage` 事件。
+
+## 查询字符串
+
+```csharp
+var text = LocalizationManager.GetString(1001);
+```
+
+也可以显式指定语言。
+
+```csharp
+var english = LocalizationManager.GetString(1001, SystemLanguage.English);
+```
+
+## 查询集合
+
+```csharp
+var collection = LocalizationManager.GetCollection(1001);
+var data = collection.GetLocalizedData(SystemLanguage.Japanese);
+```
+
+本地化表模型需要支持基于 `LocalizationCollection` 的 `LiteDB.Get<LocalizationCollection>(key)`。

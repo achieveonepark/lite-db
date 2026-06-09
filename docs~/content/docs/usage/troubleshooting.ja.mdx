@@ -1,0 +1,31 @@
+---
+title: トラブルシューティング
+description: DllNotFoundException やデータ取得失敗などのよくある問題
+---
+
+## DllNotFoundException
+
+`gilzoide-sqlite-net` ネイティブライブラリが見つからない場合、SQLite 接続が失敗します。
+
+確認すること:
+
+* `Runtime/Plugins/lib` フォルダーがパッケージに含まれているか確認します。
+* 対象プラットフォームのバイナリが存在するか確認します。
+* Unity Plugin Importer の設定がプラットフォームに合わせて維持されているか確認します。
+
+## Get&lt;T&gt; がデータを見つけられない
+
+確認すること:
+
+* テーブル名と `[Table("...")]` の名前が一致しているか確認します。
+* `Id` カラムまたは `[PrimaryKey]` の付いたカラムがあるか確認します。
+* DB ファイルが `StreamingAssets/data/file.db` にあるか確認します。
+* `await LiteDB.Initialize()` が取得より先に呼ばれているか確認します。
+
+## CSV Importer のカラムエラー
+
+最初の行はヘッダーとして使用されます。空のヘッダーがある場合、またはある行のフィールド数がヘッダー数と異なる場合、Importer は停止します。
+
+## Unity プロジェクト以外の環境でテストする場合
+
+Unity は `Runtime/Plugins` のネイティブプラグインをプラットフォームごとに読み込みます。通常の .NET や Mono コンソールで直接実行すると、Unity のプラグインローダーがないため、DLL の検索パスを別途設定する必要があります。

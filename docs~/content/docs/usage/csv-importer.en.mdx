@@ -1,0 +1,39 @@
+---
+title: CSV Importer
+description: Insert CSV into a DB table and generate model classes from the Editor
+---
+
+From the Editor menu you can insert CSV into a DB table and generate model classes.
+
+```text
+GameFramework/Data/CsvImporter
+```
+
+## Inserting CSV into the DB
+
+1. Select or create a SQLite DB file.
+2. Select a CSV file.
+3. The table name is set automatically from the CSV file name.
+4. Check the header and some rows in the preview.
+5. Press `Insert!` to insert into the DB.
+
+The first CSV row is used as column headers. If a header is empty, or a row's field count differs from the header count, an exception is thrown.
+
+## Generating a C# class
+
+Pressing `Generate C# Class` generates a data model class based on the CSV columns.
+
+Output location:
+
+```text
+Assets/Runtime/DataModel/{TableName}.cs
+```
+
+Generation rules:
+
+* The `id` column gets `[PrimaryKey, AutoIncrement]`.
+* If every value parses as an integer → `int`
+* If not an integer but parses as a float → `float`
+* Otherwise → `string`
+
+Adjust the namespace or types of the generated class to match your project conventions.

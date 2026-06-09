@@ -1,0 +1,35 @@
+---
+title: ローカライズ
+description: SQLite テーブルデータを利用したローカライズヘルパーの使い方
+---
+
+`Achieve.Database.Localization` 名前空間には、SQLite テーブルデータを利用したシンプルなローカライズヘルパーが含まれています。
+
+## 言語の設定
+
+```csharp
+LocalizationManager.SetLanguage(SystemLanguage.Korean);
+```
+
+言語が変わると `LocalizationManager.onChangeLanguage` イベントが呼び出されます。
+
+## 文字列の取得
+
+```csharp
+var text = LocalizationManager.GetString(1001);
+```
+
+言語を明示的に指定することもできます。
+
+```csharp
+var english = LocalizationManager.GetString(1001, SystemLanguage.English);
+```
+
+## コレクションの取得
+
+```csharp
+var collection = LocalizationManager.GetCollection(1001);
+var data = collection.GetLocalizedData(SystemLanguage.Japanese);
+```
+
+ローカライズテーブルのモデルは、`LocalizationCollection` を基準に `LiteDB.Get<LocalizationCollection>(key)` が可能である必要があります。

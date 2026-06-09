@@ -1,0 +1,39 @@
+---
+title: CSV Importer
+description: 在编辑器中把 CSV 插入 DB 表并生成模型类
+---
+
+在编辑器菜单中，你可以把 CSV 插入到 DB 表并生成模型类。
+
+```text
+GameFramework/Data/CsvImporter
+```
+
+## 把 CSV 插入 DB
+
+1. 选择或新建一个 SQLite DB 文件。
+2. 选择一个 CSV 文件。
+3. 表名会根据 CSV 文件名自动设置。
+4. 在预览中确认表头和部分行。
+5. 点击 `Insert!` 按钮插入到 DB。
+
+第一行 CSV 用作列表头。如果存在空表头，或某行的字段数与表头数不一致，将抛出异常。
+
+## 生成 C# 类
+
+点击 `Generate C# Class` 按钮，会基于 CSV 列生成数据模型类。
+
+生成位置：
+
+```text
+Assets/Runtime/DataModel/{TableName}.cs
+```
+
+生成规则：
+
+* `id` 列会附加 `[PrimaryKey, AutoIncrement]`。
+* 若全部可解析为整数 → `int`
+* 若不是整数但可解析为浮点数 → `float`
+* 其他 → `string`
+
+请根据项目约定调整所生成类的 namespace 或类型后使用。

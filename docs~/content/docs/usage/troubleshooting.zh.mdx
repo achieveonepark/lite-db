@@ -1,0 +1,31 @@
+---
+title: 故障排查
+description: DllNotFoundException、查询失败等常见问题
+---
+
+## DllNotFoundException
+
+如果找不到 `gilzoide-sqlite-net` 原生库，SQLite 连接会失败。
+
+需要检查：
+
+* 确认 `Runtime/Plugins/lib` 文件夹包含在包中。
+* 确认存在目标平台的二进制文件。
+* 确认 Unity Plugin Importer 的设置与平台保持一致。
+
+## Get&lt;T&gt; 找不到数据
+
+需要检查：
+
+* 确认表名与 `[Table("...")]` 的名称一致。
+* 确认存在 `Id` 列或带 `[PrimaryKey]` 的列。
+* 确认 DB 文件位于 `StreamingAssets/data/file.db`。
+* 确认 `await LiteDB.Initialize()` 在查询之前被调用。
+
+## CSV Importer 的列错误
+
+第一行用作表头。如果存在空表头，或某行的字段数与表头数不一致，Importer 会停止。
+
+## 在非 Unity 项目环境中测试时
+
+Unity 会按平台加载 `Runtime/Plugins` 中的原生插件。如果直接在普通的 .NET 或 Mono 控制台中运行，由于没有 Unity 的插件加载器，你需要自行设置 DLL 搜索路径。

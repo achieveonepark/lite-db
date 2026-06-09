@@ -1,0 +1,70 @@
+---
+title: API
+description: Initialize、Get、GetList、Exist、TryGetValue 等运行时 API 参考
+---
+
+运行时入口是 `Achieve.Database.LiteDB`。
+
+## Initialize
+
+```csharp
+LiteDB.Initialize(path);
+```
+
+使用传入的 SQLite 文件路径立即连接。
+
+```csharp
+await LiteDB.Initialize();
+```
+
+把默认 DB 文件从 `StreamingAssets/data/file.db` 复制到 `persistentDataPath/data/localdatasqlite.db`，然后连接。
+
+## Get
+
+```csharp
+var item = LiteDB.Get<ItemData>(1);
+```
+
+返回主键或 `Id` 列等于传入值的第一行。未初始化时返回 `default`。
+
+## GetList
+
+```csharp
+var items = LiteDB.GetList<ItemData>(100, 199);
+```
+
+查询 `Id >= startId AND Id <= endId` 范围内的行。
+
+## Exist
+
+```csharp
+if (LiteDB.Exist<ItemData>(10))
+{
+    // 存在
+}
+```
+
+检查该类型的表中是否存在该 `Id`。
+
+## TryGetValue
+
+```csharp
+if (LiteDB.TryGetValue<ItemData>(10, out var item))
+{
+    Debug.Log(item.Name);
+}
+```
+
+先检查存在性，若有数据则通过 `out` 返回。未初始化或没有数据时返回 `false`。
+
+## 直接使用 SQLiteConnection
+
+如需高级用法，可以直接使用 `SQLite.SQLiteConnection`。
+
+```csharp
+using var db = new SQLiteConnection(path);
+var rows = db.Query<ItemData>("SELECT * FROM ItemData WHERE Price >= ?", 100);
+var count = db.ExecuteScalar<int>("SELECT COUNT(1) FROM ItemData");
+```
+
+目前提供的直接 API 以查询为主。不包含 sqlite-net 的完整 ORM 功能、LINQ 表查询或异步连接池。

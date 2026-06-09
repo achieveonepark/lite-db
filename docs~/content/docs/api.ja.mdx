@@ -1,0 +1,70 @@
+---
+title: API
+description: Initialize、Get、GetList、Exist、TryGetValue などのランタイム API リファレンス
+---
+
+ランタイムのエントリーポイントは `Achieve.Database.LiteDB` です。
+
+## Initialize
+
+```csharp
+LiteDB.Initialize(path);
+```
+
+渡された SQLite ファイルパスで即座に接続します。
+
+```csharp
+await LiteDB.Initialize();
+```
+
+デフォルトの DB ファイルを `StreamingAssets/data/file.db` から `persistentDataPath/data/localdatasqlite.db` にコピーしてから接続します。
+
+## Get
+
+```csharp
+var item = LiteDB.Get<ItemData>(1);
+```
+
+モデルの主キーまたは `Id` カラムが渡された値と一致する最初の行を返します。初期化されていない状態では `default` を返します。
+
+## GetList
+
+```csharp
+var items = LiteDB.GetList<ItemData>(100, 199);
+```
+
+`Id >= startId AND Id <= endId` の範囲の行を取得します。
+
+## Exist
+
+```csharp
+if (LiteDB.Exist<ItemData>(10))
+{
+    // 存在する
+}
+```
+
+該当する型のテーブルで `Id` が存在するか確認します。
+
+## TryGetValue
+
+```csharp
+if (LiteDB.TryGetValue<ItemData>(10, out var item))
+{
+    Debug.Log(item.Name);
+}
+```
+
+存在を確認したうえで、データがあれば `out` で返します。初期化されていない、またはデータがない場合は `false` を返します。
+
+## SQLiteConnection を直接使用
+
+高度な用途では、`SQLite.SQLiteConnection` を直接使用できます。
+
+```csharp
+using var db = new SQLiteConnection(path);
+var rows = db.Query<ItemData>("SELECT * FROM ItemData WHERE Price >= ?", 100);
+var count = db.ExecuteScalar<int>("SELECT COUNT(1) FROM ItemData");
+```
+
+現在提供している直接 API は取得が中心です。sqlite-net の完全な ORM 機能、LINQ テーブルクエリ、非同期コネクションプールは含まれていません。

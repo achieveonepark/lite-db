@@ -1,0 +1,75 @@
+---
+title: 数据模型
+description: 模型类规则、IDataBase、支持的 Attribute 与列映射
+---
+
+数据模型必须是带有 public 无参构造函数的 C# 类。`LiteDB.Get<T>()` 和 `LiteDB.Query<T>()` 会把查询结果的列名匹配到模型中 public 可写的属性或 public 字段。
+
+```csharp
+using Achieve.Database;
+using SQLite;
+
+[Table("ItemData")]
+public sealed class ItemData : IDataBase
+{
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Price { get; set; }
+    public float Weight { get; set; }
+}
+```
+
+## IDataBase
+
+`GetList`、`Exist`、`TryGetValue` 以 `IDataBase` 为基准，期望存在 `Id` 和 `Name`。
+
+```csharp
+public interface IDataBase
+{
+    int Id { get; set; }
+    string Name { get; set; }
+}
+```
+
+## 支持的 Attribute
+
+| Attribute | 说明 |
+| --- | --- |
+| `[Table("Name")]` | 指定与类名不同的表名 |
+| `[Column("Name")]` | 指定与成员不同的列名 |
+| `[PrimaryKey]` | 指定主键成员 |
+| `[AutoIncrement]` | 用于代码生成兼容的 Attribute |
+| `[Ignore]` | 从映射中排除 |
+| `[NotNull]` | 用于模型表示的 Attribute |
+
+`[AutoIncrement]` 和 `[NotNull]` 由于当前不提供建表 API，因此不用于运行时的架构生成。它们用于在使用 CSV Importer 或外部 DB 工具创建架构时保持语义一致。
+
+## 列映射
+
+默认映射不区分大小写。
+
+```csharp
+[Column("display_name")]
+public string DisplayName { get; set; }
+```
+
+没有 setter 的属性和 `readonly` 字段会被排除在映射之外。
+
+## 类型映射
+
+查询 API 以 `Id` 列为基准工作。SQLite 类型与 C# 类型的对应如下。
+
+| SQLite 类型 | C# 类型 |
+| --- | --- |
+| `INTEGER` | `int`, `long`, `bool`, enum |
+| `REAL` | `float`, `double` |
+| `TEXT` | `string`, `DateTime`, `Guid` |
+| `BLOB` | `byte[]` |
+
+推荐规则：
+
+* 给表设置 `Id` 列。
+* 对按单一键查询的模型，把 `Id` 作为主键管理。
+* 让 C# 属性名与 DB 列名保持一致。
+* 当类名与表名不同时，使用 `[Table("TableName")]`。

@@ -1,0 +1,31 @@
+---
+title: Troubleshooting
+description: Common issues such as DllNotFoundException and failed lookups
+---
+
+## DllNotFoundException
+
+If the `gilzoide-sqlite-net` native library cannot be found, the SQLite connection fails.
+
+Things to check:
+
+* Confirm that the `Runtime/Plugins/lib` folder is included in the package.
+* Confirm that a binary for your target platform exists.
+* Confirm that the Unity Plugin Importer settings are kept correct for the platform.
+
+## Get&lt;T&gt; cannot find data
+
+Things to check:
+
+* Confirm that the table name matches the `[Table("...")]` name.
+* Confirm that an `Id` column or a `[PrimaryKey]` column exists.
+* Confirm that the DB file is at `StreamingAssets/data/file.db`.
+* Confirm that `await LiteDB.Initialize()` is called before any lookup.
+
+## Column errors in the CSV Importer
+
+The first row is used as headers. If a header is empty, or a row's field count differs from the header count, the importer stops.
+
+## Testing outside a Unity project
+
+Unity loads the native plugins in `Runtime/Plugins` per platform. If you run directly in a plain .NET or Mono console, there is no Unity plugin loader, so you must set the DLL search path yourself.

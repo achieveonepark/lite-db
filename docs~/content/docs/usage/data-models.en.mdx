@@ -1,0 +1,75 @@
+---
+title: Data Models
+description: Model class rules, IDataBase, supported attributes, and column mapping
+---
+
+A data model must be a C# class with a public parameterless constructor. `LiteDB.Get<T>()` and `LiteDB.Query<T>()` match the result column names to the model's public settable properties or public fields.
+
+```csharp
+using Achieve.Database;
+using SQLite;
+
+[Table("ItemData")]
+public sealed class ItemData : IDataBase
+{
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Price { get; set; }
+    public float Weight { get; set; }
+}
+```
+
+## IDataBase
+
+`GetList`, `Exist`, and `TryGetValue` rely on `IDataBase`, expecting `Id` and `Name`.
+
+```csharp
+public interface IDataBase
+{
+    int Id { get; set; }
+    string Name { get; set; }
+}
+```
+
+## Supported attributes
+
+| Attribute | Description |
+| --- | --- |
+| `[Table("Name")]` | Specifies a table name different from the class name |
+| `[Column("Name")]` | Specifies a column name different from the member |
+| `[PrimaryKey]` | Marks the primary key member |
+| `[AutoIncrement]` | Attribute kept for code-generation compatibility |
+| `[Ignore]` | Excludes a member from mapping |
+| `[NotNull]` | Attribute used for model representation |
+
+`[AutoIncrement]` and `[NotNull]` are not used during runtime schema generation because the package does not provide a table-creation API. They exist to keep the meaning consistent when creating a schema with the CSV Importer or an external DB tool.
+
+## Column mapping
+
+Mapping is case-insensitive by default.
+
+```csharp
+[Column("display_name")]
+public string DisplayName { get; set; }
+```
+
+Properties without a setter and `readonly` fields are excluded from mapping.
+
+## Type mapping
+
+The query API operates on the `Id` column. SQLite types map to C# types as follows.
+
+| SQLite type | C# type |
+| --- | --- |
+| `INTEGER` | `int`, `long`, `bool`, enum |
+| `REAL` | `float`, `double` |
+| `TEXT` | `string`, `DateTime`, `Guid` |
+| `BLOB` | `byte[]` |
+
+Recommended rules:
+
+* Give the table an `Id` column.
+* Manage `Id` as the primary key for models you look up by a single key.
+* Keep C# property names the same as DB column names.
+* Use `[Table("TableName")]` when the class name and table name differ.

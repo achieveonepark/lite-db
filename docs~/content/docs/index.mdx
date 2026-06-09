@@ -1,6 +1,6 @@
 ---
-title: LiteDB
-description: Unity에서 SQLite 기반 정적 테이블 데이터를 가볍게 읽기 위한 패키지 가이드
+title: 소개
+description: Unity에서 SQLite 기반 정적 테이블 데이터를 가볍게 읽기 위한 경량 패키지
 ---
 
 LiteDB는 Unity 프로젝트에서 SQLite 데이터베이스를 읽기 전용 테이블 데이터 저장소처럼 다루기 위한 경량 패키지입니다. 게임 밸런스 데이터, 퀘스트, 아이템, 지역화 텍스트처럼 빌드에 포함되는 정적 데이터를 C# 모델로 매핑해서 조회할 수 있습니다.
@@ -16,32 +16,8 @@ LiteDB는 Unity 프로젝트에서 SQLite 데이터베이스를 읽기 전용 �
 * CSV 헤더 기반 데이터 모델 코드 생성
 * Localization 헬퍼
 
-## 기본 흐름
+## 다음 단계
 
-1. SQLite DB 파일을 준비합니다.
-2. Unity의 `StreamingAssets/data/file.db` 위치에 포함합니다.
-3. 데이터 모델 클래스를 작성합니다.
-4. 게임 시작 시 `await LiteDB.Initialize()` 또는 `LiteDB.Initialize(path)`를 호출합니다.
-5. `LiteDB.Get<T>(id)` 같은 API로 데이터를 읽습니다.
-
-```csharp
-using Achieve.Database;
-using SQLite;
-
-[Table("Quest")]
-public sealed class Quest : IDataBase
-{
-    [PrimaryKey]
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int RewardGold { get; set; }
-}
-
-await LiteDB.Initialize();
-
-var quest = LiteDB.Get<Quest>(1);
-if (LiteDB.TryGetValue<Quest>(2, out var nextQuest))
-{
-    Debug.Log(nextQuest.Name);
-}
-```
+* [시작하기](./getting-started) — 설치부터 첫 데이터 조회까지
+* [사용법](./usage) — 데이터 모델, CSV Importer, 지역화
+* [API](./api) — 런타임 API 레퍼런스

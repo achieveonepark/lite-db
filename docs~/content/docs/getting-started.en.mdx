@@ -1,0 +1,77 @@
+---
+title: Getting Started
+description: A quick start guide from installing LiteDB to your first query
+---
+
+This page walks through the minimal flow from installation to your first query.
+
+## Installation
+
+In Unity Package Manager, open `Add package from git URL...` and enter the address below.
+
+```text
+https://github.com/achieveonepark/lite-db.git
+```
+
+### Dependencies
+
+| Package | Purpose |
+| --- | --- |
+| `com.cysharp.unitask` | Asynchronous DB file copy and initialization |
+| `com.unity.test-framework` | Unity test environment |
+
+Targets Unity `2022.3` or later.
+
+## Preparing the DB file
+
+LiteDB reads a SQLite DB file and maps it to C# models. You can create the DB file with a tool such as DB Browser for SQLite.
+
+The default initialization API uses the following locations.
+
+| Purpose | Path |
+| --- | --- |
+| Source DB | `Application.streamingAssetsPath/data/file.db` |
+| Runtime copy | `Application.persistentDataPath/data/localdatasqlite.db` |
+
+Place the source DB file at `StreamingAssets/data/file.db`.
+
+## Writing a data model
+
+Write a C# class that corresponds to the table you want to query. Using `Id` as the primary key is recommended.
+
+```csharp
+using Achieve.Database;
+using SQLite;
+
+[Table("Quest")]
+public sealed class Quest : IDataBase
+{
+    [PrimaryKey]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int RewardGold { get; set; }
+}
+```
+
+## Initialization and first query
+
+Call `await LiteDB.Initialize()` at game start to copy the source DB file to the runtime path and connect. After that, read data with APIs like `LiteDB.Get<T>(id)`.
+
+```csharp
+await LiteDB.Initialize();
+
+var quest = LiteDB.Get<Quest>(1);
+if (LiteDB.TryGetValue<Quest>(2, out var nextQuest))
+{
+    Debug.Log(nextQuest.Name);
+}
+```
+
+<Callout type="info">
+On Android, `StreamingAssets` files are read via `UnityWebRequest`; on other platforms, file copy is used. To specify a path directly, use `LiteDB.Initialize(path)`.
+</Callout>
+
+## Next steps
+
+* [Usage › Data Models](./usage/data-models) — model rules and attributes
+* [API](./api) — the full runtime API

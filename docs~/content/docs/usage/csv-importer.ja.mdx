@@ -1,0 +1,39 @@
+---
+title: CSV Importer
+description: Editor から CSV を DB テーブルに挿入し、モデルクラスを生成
+---
+
+Editor メニューから CSV を DB テーブルに挿入し、モデルクラスを生成できます。
+
+```text
+GameFramework/Data/CsvImporter
+```
+
+## CSV を DB に挿入
+
+1. SQLite DB ファイルを選択するか、新規作成します。
+2. CSV ファイルを選択します。
+3. テーブル名は CSV ファイル名から自動的に設定されます。
+4. プレビューでヘッダーと一部の行を確認します。
+5. `Insert!` ボタンを押して DB に挿入します。
+
+最初の CSV 行はカラムヘッダーとして使用されます。空のヘッダーがある場合、または行のフィールド数がヘッダー数と異なる場合は例外が発生します。
+
+## C# クラスの生成
+
+`Generate C# Class` ボタンを押すと、CSV カラムに基づいてデータモデルクラスを生成します。
+
+生成場所:
+
+```text
+Assets/Runtime/DataModel/{TableName}.cs
+```
+
+生成ルール:
+
+* `id` カラムには `[PrimaryKey, AutoIncrement]` が付与されます。
+* すべて整数として解釈できる場合は `int`
+* 整数ではないが実数として解釈できる場合は `float`
+* それ以外は `string`
+
+生成されたクラスは、プロジェクトの規約に合わせて namespace や型を調整して使用してください。

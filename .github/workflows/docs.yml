@@ -63,3 +63,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # 문서가 빌드되면 cording-library(docs.somiri.dev) 통합 빌드를 자동 트리거한다.
+  # DOCS_TOKEN(전용 PAT) 시크릿이 등록돼 있을 때만 동작하고, 없으면 조용히 건너뛴다.
+  notify-hub:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger docs hub rebuild
+        env:
+          DOCS_TOKEN: ${{ secrets.DOCS_TOKEN }}
+        run: |
+          if [ -z "$DOCS_TOKEN" ]; then
+            echo "DOCS_TOKEN secret not set — skipping hub notify"
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: token $DOCS_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/achieveonepark/cording-library/dispatches \
+            -d '{"event_type":"docs-updated"}'
+          echo "Notified docs hub (cording-library)"
